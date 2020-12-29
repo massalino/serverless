@@ -8,3 +8,4 @@ COPY api/carta.js /var/task/cartas-papainoel/api/
 WORKDIR /var/task/cartas-papainoel
 RUN npm install --save bluebird
 RUN npm install --save uuid
+CMD ["node"]
