@@ -1,0 +1,72 @@
+service: carta-papainoel
+
+frameworkVersion: ">2.0.0"
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: us-east-1
+  apiGateway: {
+    minimumCompressionSize: 1024,
+    shouldStartNameWithService: true,
+  }
+  environment:
+    CARTA_TABLE: ${self:service}-${opt:stage, self:provider.stage} 
+
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource: "*"
+
+resources:
+  Resources:      
+    CartaDynamoDbTable:      
+      Type: 'AWS::DynamoDB::Table'      
+      #DeletionPolicy: Retain      
+      Properties:      
+        AttributeDefinitions:      
+          -      
+            AttributeName: "id"      
+            AttributeType: "S"   
+        KeySchema:      
+          -      
+            AttributeName: "id"      
+            KeyType: "HASH"              
+        ProvisionedThroughput:      
+          ReadCapacityUnits: 1      
+          WriteCapacityUnits: 1      
+        StreamSpecification:      
+          StreamViewType: "NEW_AND_OLD_IMAGES"      
+        TableName: ${self:provider.environment.CARTA_TABLE}        
+
+functions:
+  enviarCarta:
+    handler: api/carta.enviar
+    memorySize: 128
+    description: Enviar carta ao Papai Noel.
+    events:
+      - http: 
+          path: enviar
+          method: post
+
+  listarCartas:
+    handler: api/carta.listar        
+    memorySize: 128        
+    description: Listar todas as cartas        
+    events:        
+      - http:         
+          path: listar        
+          method: get            
+
+  lerCarta:
+    handler: api/carta.get        
+    events:        
+      - http:        
+          path: carta/{id}        
+          method: get          
