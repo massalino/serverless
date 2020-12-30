@@ -11,21 +11,21 @@ module.exports.enviar = (event, context, callback) => {
 
   const requestBody = JSON.parse(event.body);
   const fullname = requestBody.fullname;
-  const subject = requestBody.subject; 
+  const address = requestBody.address; 
   const content = requestBody.content;
 
-  if (typeof fullname !== 'string' || typeof subject !== 'string' || typeof content !== 'string' ) {
+  if (typeof fullname !== 'string' || typeof address !== 'string' || typeof content !== 'string' ) {
     console.error('Erro de validação');
     callback(new Error('Couldn\'t A carta não pode ser enviada devido ao não preenchimento correto!'));
     return;
   }  
 
-  enviarCartaP(cartaInfo(fullname, subject, content))
+  enviarCartaP(cartaInfo(fullname, address, content))
     .then(res => {
       callback(null, {
         statusCode: 200,
         body: JSON.stringify({
-          message: `Carta enviada com sucesso ${fullname}`,
+          message: `Carta enviada com sucesso pel(a)o ${fullname}`,
           cartaId: res.id
         })
       });
@@ -45,7 +45,7 @@ module.exports.enviar = (event, context, callback) => {
 module.exports.listar = (event, context, callback) => {
   var params = {
       TableName: process.env.CARTA_TABLE,
-      ProjectionExpression: "id, fullname, subject, content"
+      ProjectionExpression: "id, fullname, address, content"
   };
 
   console.log("Scanning Carta table.");
@@ -105,12 +105,12 @@ const enviarCartaP = carta => {
 };
 
 
-const cartaInfo = (fullname, subject, content) => {
+const cartaInfo = (fullname, address, content) => {
   const timestamp = new Date().getTime();
   return {
     id: uuid.v1(),
     fullname: fullname,
-    subject: subject,
+    address: address,
     content: content,
     submittedAt: timestamp,
     updatedAt: timestamp,

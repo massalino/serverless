@@ -2,7 +2,7 @@ var should = require("should");
 var request = require("request");
 var chai = require("chai");
 var expect = chai.expect;
-var urlBase = "https://hdrivvglei.execute-api.us-east-1.amazonaws.com/dev";
+var urlBase = "https://jm33wy7k1j.execute-api.us-east-1.amazonaws.com/dev";
 
 
 describe("Teste API carta-papainoel listar ",function(){
